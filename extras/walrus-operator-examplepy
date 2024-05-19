@@ -1,0 +1,12 @@
+# https://stackoverflow.com/questions/50297704/what-are-assignment-expressions-using-the-walrus-or-operator-why-was-t
+def f(n: int):
+    yield n+1
+
+
+
+if __name__ == '__main__':
+    if n := f(3):
+        print("Here", [i for i in n])
+
+    # print([(lambda j: [j, i/j])(i+1) for i in range(5)])
+    print([ [j:=i+1, i/j] for i in range(5)])
