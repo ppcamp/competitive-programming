@@ -1,4 +1,4 @@
-//go:build cgo && (linux || darwin)
+//go:build cgo && windows
 
 package climbstairs
 
@@ -10,7 +10,7 @@ import "unsafe"
 
 type Solution struct{ ptr unsafe.Pointer }
 
-func NewSolution() Solution {
+func NewSolution() ISolution {
 	return Solution{C.LIB_NewSolution()}
 }
 
