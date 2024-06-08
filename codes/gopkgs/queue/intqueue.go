@@ -14,12 +14,7 @@ package queue
 //	}
 type IntQueue []int
 
-func (s *IntQueue) Add(v int) {
-	*s = append(*s, v)
-}
-
-func (s *IntQueue) Pop() int {
-	el := (*s)[0]
-	*s = (*s)[1:]
-	return el
-}
+func (s *IntQueue) Push(n int)  { *s = append(*s, n) }
+func (s *IntQueue) Pop() int    { n := (*s)[0]; *s = (*s)[1:]; return n }
+func (s *IntQueue) Empty() bool { return len(*s) == 0 }
+func (s *IntQueue) Len() int    { return len(*s) }
