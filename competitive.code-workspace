@@ -1,106 +1,96 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
+    "folders": [
+        {
+            "path": "."
+        }
     ],
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+
+            {
+                // "windows": {},
+                "command": "go",
+                "args": [
+                    "test",
+                    "-v",
+                    "${input:runTestFolder}"
+                ],
+                "label": "go:test:pick",
+                "detail": "Go test a package basing on user's pick",
+                "type": "shell",
+                "presentation": { "reveal": "silent" },
+                "group": "build",
+                "problemMatcher": "$gcc",
+            },
+            {
+                "command": "go",
+                "args": [
+                    "test",
+                    "-v",
+                    "${file}"
+                ],
+                "label": "go:test:current",
+                "detail": "Go test current file",
+                "type": "shell",
+                "presentation": { "reveal": "silent" },
+                "group": "build",
+                "problemMatcher": "$gcc",
+            },
+            {
+                "command": "go",
+                "args": [
+                    "ruh",
+                    "${file}"
+                ],
+                "label": "go:run:current",
+                "detail": "Go run current file",
+                "type": "shell",
+                "presentation": { "reveal": "silent" },
+                "group": "build",
+                "problemMatcher": "$gcc",
+            },
+        ],
+        "inputs": [
+            {
+                "id": "runTestFolder",
+                "type": "command",
+                "command": "extension.commandvariable.pickStringRemember",
+                "args": {
+                    "description": "Which directory to run tests?",
+                    "options": [
+                        [ "Rerun task", "${remember:toRememberFolder}" ],
+                        [ "Pick directory", "${pickFile:directory}" ],
+                        [ "All", "./..." ],
+                    ],
+                    "rememberTransformed": true,
+                    "key": "goFilesPath",
+                    "default": null,
+                    "pickFile": {
+                        "directory": {
+                            "description": "Which directory?",
+                            "include": "**/*.go",
+                            "showDirs": true,
+                            "keyRemember": "toRememberFolder"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "filename",
+                "type": "promptString",
+                "description": "Allow user to set the file",
+            }
+        ]
+    },
     "settings": {
-        "files.associations": {
-            "*.csv": "plaintext",
-            "*.svelte": "svelte",
-            "*.tmpl": "gohtml",
-            "iostream": "cpp",
-            "sstream": "cpp",
-            "regex": "cpp",
-            "ostream": "cpp",
-            "any": "cpp",
-            "array": "cpp",
-            "atomic": "cpp",
-            "barrier": "cpp",
-            "bit": "cpp",
-            "*.tcc": "cpp",
-            "bitset": "cpp",
-            "cctype": "cpp",
-            "cfenv": "cpp",
-            "charconv": "cpp",
-            "chrono": "cpp",
-            "cinttypes": "cpp",
-            "clocale": "cpp",
-            "cmath": "cpp",
-            "codecvt": "cpp",
-            "compare": "cpp",
-            "complex": "cpp",
-            "concepts": "cpp",
-            "condition_variable": "cpp",
-            "coroutine": "cpp",
-            "csetjmp": "cpp",
-            "csignal": "cpp",
-            "cstdarg": "cpp",
-            "cstddef": "cpp",
-            "cstdint": "cpp",
-            "cstdio": "cpp",
-            "cstdlib": "cpp",
-            "cstring": "cpp",
-            "ctime": "cpp",
-            "cuchar": "cpp",
-            "cwchar": "cpp",
-            "cwctype": "cpp",
-            "deque": "cpp",
-            "forward_list": "cpp",
-            "list": "cpp",
-            "map": "cpp",
-            "set": "cpp",
-            "string": "cpp",
-            "unordered_map": "cpp",
-            "unordered_set": "cpp",
-            "vector": "cpp",
-            "exception": "cpp",
-            "algorithm": "cpp",
-            "functional": "cpp",
-            "iterator": "cpp",
-            "memory": "cpp",
-            "memory_resource": "cpp",
-            "numeric": "cpp",
-            "optional": "cpp",
-            "random": "cpp",
-            "ratio": "cpp",
-            "source_location": "cpp",
-            "string_view": "cpp",
-            "system_error": "cpp",
-            "tuple": "cpp",
-            "type_traits": "cpp",
-            "utility": "cpp",
-            "fstream": "cpp",
-            "future": "cpp",
-            "initializer_list": "cpp",
-            "iomanip": "cpp",
-            "iosfwd": "cpp",
-            "istream": "cpp",
-            "latch": "cpp",
-            "limits": "cpp",
-            "mutex": "cpp",
-            "new": "cpp",
-            "numbers": "cpp",
-            "ranges": "cpp",
-            "scoped_allocator": "cpp",
-            "semaphore": "cpp",
-            "shared_mutex": "cpp",
-            "span": "cpp",
-            "stdexcept": "cpp",
-            "stop_token": "cpp",
-            "streambuf": "cpp",
-            "syncstream": "cpp",
-            "thread": "cpp",
-            "typeindex": "cpp",
-            "typeinfo": "cpp",
-            "valarray": "cpp",
-            "variant": "cpp"
-        },
         "C_Cpp.autocomplete": "default",
         "C_Cpp.default.intelliSenseMode": "linux-gcc-x64",
         "C_Cpp.default.cppStandard": "c++20",
         "C_Cpp.default.cStandard": "c17",
         "C_Cpp.default.compilerPath": "/usr/bin/gcc",
-        "C_Cpp.default.includePath": [ "${workspaceFolder}/**" ],
+        "C_Cpp.default.includePath": [
+            "${workspaceFolder}/**"
+        ],
     }
 }
