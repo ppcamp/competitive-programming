@@ -10,8 +10,10 @@ func sample(nums []int) int {
 	return -1
 }
 
-func main() {
-	fmt.Println(sample([]int{})) // [2] 2.5
+func Example() {
+	fmt.Println(sample([]int{}))
+	// Output:
+	// -1
 }
 
 // func Example() {
