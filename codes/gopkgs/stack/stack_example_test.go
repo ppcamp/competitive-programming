@@ -5,13 +5,13 @@ import (
 	"leetcode/codes/gopkgs/stack"
 )
 
-func fill(s stack.Pusher) {
+func fill(s stack.Pusher[int]) {
 	for i := 0; i < 5; i++ {
 		s.Push(i)
 	}
 }
 
-func popprint(s stack.Popper) {
+func popprint(s stack.Popper[int]) {
 	for !s.Empty() {
 		fmt.Println(s.Pop())
 	}

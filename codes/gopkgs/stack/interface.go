@@ -1,13 +1,13 @@
 package stack
 
-type Pusher interface{ Push(n int) }
+type Pusher[T any] interface{ Push(T int) }
 
-type Popper interface {
-	Pop() int
+type Popper[T any] interface {
+	Pop() T
 	Empty() bool
 }
 
-type Interface interface {
-	Pusher
-	Popper
+type Interface[T any] interface {
+	Pusher[T]
+	Popper[T]
 }
