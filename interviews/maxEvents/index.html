@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Example of how to do the maxEvents problem</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+        body {
+            margin: 0%;
+            padding: 0%;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            row-gap: 10px;
+        }
+
+        main {
+            height: 100dvh;
+            width: 100dvw;
+            flex-direction: column;
+        }
+
+        /* https://css-loaders.com/ */
+        .loader {
+            height: 4px;
+            width: 50%;
+            --c: no-repeat linear-gradient(#6100ee 0 0);
+            background: var(--c), var(--c), #d7b8fc;
+            background-size: 60% 100%;
+            animation: l16 3s infinite;
+        }
+
+        @keyframes l16 {
+            0% {
+                background-position: -150% 0, -150% 0
+            }
+
+            66% {
+                background-position: 250% 0, -150% 0
+            }
+
+            100% {
+                background-position: 250% 0, 250% 0
+            }
+        }
+
+        .display-none {
+            display: none;
+        }
+
+        #errors {
+            background-color: tomato;
+            min-width: 80%;
+            padding: 20px;
+            justify-content: flex-start;
+        }
+
+        #errors::before {
+            content: '⚠️';
+            padding-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="flex">
+        <div id="errors" class="flex"></div>
+
+        <div id="mainloader" class="loader"></div>
+
+        <div id="board" class="display-none">
+            <p>Canvas example</p>
+            <canvas id="example" width="800px" height="500px"></canvas>
+        </div>
+    </main>
+
+    <script>
+        const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms, ms));
+
+        class DisplayError {
+            /** @type {Array<string>} */
+            errors;
+            /** @type {number} */
+            #timer;
+            /** @type {HTMLDivElement} */
+            el;
+
+            /**
+             * @param {HTMLDivElement} el
+             * @param {number=} ms */
+            constructor(el, ms = 3e3) {
+                this.errors = new Array();
+                this.el = el;
+                this.#timer = setInterval(this.ontimer, ms, this);
+            }
+
+            /** @param {string} error */
+            add(error) { this.errors.push(error); }
+
+            /** @param {Object} json */
+            json(json) { this.errors.push(JSON.stringify(json)); }
+
+            /** @param {DisplayError} t */
+            ontimer(t) {
+                if (t.errors.length > 0) {
+                    t.el.classList.remove(CSS_DISPLAY_NONE);
+                } else {
+                    t.el.classList.add(CSS_DISPLAY_NONE);
+                }
+
+                t.el.innerText = t.errors.join('\n\n');
+                t.errors.shift(); // pop first element
+            }
+        }
+
+        class Draw {
+            /** @type {CanvasRenderingContext2D} */
+            #ctx;
+            /** @type {HTMLCanvasElement} */
+            #canvas;
+            /** @type {number} */
+            #x;
+            /** @type {number} */
+            #y;
+
+            /** @type {number} */
+            #marks;
+
+            /**
+             * @param {HTMLCanvasElement} canvas
+             */
+            constructor(canvas) {
+                this.#canvas = canvas;
+                this.#ctx = canvas.getContext("2d");
+
+                // draw boundaries
+                this.#ctx.strokeStyle = "#000";
+                this.#ctx.strokeRect(0, 0, this.#canvas.width, this.#canvas.height);
+                this.#x = 20;
+                this.#y = 20;
+                this.#marks = 0;
+            }
+
+            /**
+             * @typedef {object} Position
+             * @property {number=} x - Position from left
+             * @property {number} y - Position from top
+             */
+
+
+            /**
+             * @typedef {object} Mark
+             * @property {number=} start - Position from left
+             * @property {number} end - Position to end
+             */
+
+            /**
+             * Draw an element
+             * @public
+             * @param {Position} pos
+             * @returns {Draw}
+             */
+            rectangle(pos) {
+                const loc = Object.assign({ x: this.#x }, pos);
+
+                const ctx = this.#ctx;
+                ctx.beginPath();
+
+                ctx.strokeStyle = "red";
+                ctx.fillStyle = "blue";
+                ctx.moveTo(loc.x, loc.y);
+                ctx.lineTo(200, loc.y * 5);
+                ctx.lineTo(20, loc.y * 8);
+                ctx.stroke();
+
+                return this;
+            }
+
+            /**
+             * Draw an element
+             * @public
+             * @param {Mark} pos
+             * @param {number=} mult
+             * @returns {Draw}
+             */
+            mark(pos, mult = 100) {
+                const loc = Object.assign({ start: this.#x, end: this.#x }, pos);
+                this.#marks += 20;
+
+                const ctx = this.#ctx;
+                ctx.beginPath();
+
+                ctx.strokeStyle = "red";
+                ctx.fillStyle = "red";
+
+                const y = this.#y + this.#marks;
+                const start = loc.start * mult;
+                const end = loc.end * mult;
+
+                // draw line
+                ctx.moveTo(start, y);
+                ctx.lineTo(end, y);
+
+                // draw mark limiter left
+                ctx.moveTo(start, y + 5);
+                ctx.lineTo(start, y - 5);
+
+                // draw mark limiter right
+                ctx.moveTo(end, y - 5);
+                ctx.lineTo(end, y + 5);
+
+                // draw texts
+                ctx.font = "normal 100 12px Arial, serif"
+                ctx.fillText(loc.start, start - 10, y + 2)
+                ctx.fillText(loc.end, end + 10, y + 2)
+
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(start, y + 5);
+
+                return this;
+            }
+
+            /** @param {Array<number>} rulers */
+            rule(rulers) {
+
+                const ctx = this.#ctx;
+                ctx.beginPath();
+
+                let x = this.#canvas.width - this.#x;
+                let y = this.#canvas.height - this.#y;
+
+                ctx.strokeStyle = "black";
+                ctx.moveTo(x, y);
+                ctx.lineTo(this.#x, y);
+
+                rulers.forEach((v) => {
+                    ctx.moveTo(v, y);
+                    ctx.lineTo(v, y + 10);
+                    ctx.fillText(v, v + 5, y + 10)
+                });
+
+                ctx.stroke();
+                return this;
+            }
+        }
+
+        async function init() {
+            const loader = document.getElementById("mainloader");
+            const canvas = document.getElementById("example");
+            const board = document.getElementById("board");
+            const errors = document.getElementById("errors");
+
+            if (!canvas?.getContext || !loader || !board || !errors) {
+                alert("Elements not found");
+                return;
+            }
+
+            // await delay(1e3);
+
+            loader.classList.add(CSS_DISPLAY_NONE);
+            board.classList.remove(CSS_DISPLAY_NONE);
+            errors.classList.add(CSS_DISPLAY_NONE);
+
+            /** @global */
+            ErrorHandler = new DisplayError(errors);
+
+            const draw = new Draw(canvas);
+            const mult = 100;
+            draw.rule(Array.from({ length: 20 }, (_, index) => index * mult));
+
+            const days = [
+                [1, 5],
+                [1, 5],
+                [2, 3],
+                [2, 3],
+            ];
+
+            days.forEach(([start, end]) => {
+                draw.mark({ start, end }, mult);
+            });
+        }
+
+        /** @type {DisplayError} */
+        var ErrorHandler;
+
+        /** @type {DisplayError} */
+        var CSS_DISPLAY_NONE = "display-none";
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+
+</html>

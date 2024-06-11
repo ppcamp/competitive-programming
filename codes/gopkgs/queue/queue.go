@@ -17,7 +17,11 @@ type IntQueue []int
 func (s *IntQueue) Add(n int)   { *s = append(*s, n) }
 func (s *IntQueue) Pop() int    { n := (*s)[0]; *s = (*s)[1:]; return n }
 func (s *IntQueue) Empty() bool { return len(*s) == 0 }
-func (s *IntQueue) Len() int    { return len(*s) }
+func (s IntQueue) Len() int     { return len(s) }
+
+// Keep in mind that in Go, methods are transpiled to something like:
+// Add(s *IntQueue, n int), thus, if you instead of pointer, use a common param
+// Add(s IntQueue, n int), when changing value internaly, it`ll pointer to local
 
 type Queue[T any] struct{ arr []T }
 
